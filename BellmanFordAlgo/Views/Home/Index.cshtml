@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    var list = new Currency() { }.Initiate();
+}
+
+<div class="text-center">
+    <h1 class="display-4">Bellman ford</h1>
+    <table class="table tale-responsive table table-bordered table-hover ">
+        <thead>
+            <tr>
+                <th>
+                    Currency
+                </th>
+                @foreach (var item in list)
+                {
+                    <th>
+                        @item.Name
+                    </th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in list)
+            {
+                <tr>
+                    <td>
+                        @item.Name
+                    </td>
+                    @foreach (var amount in list)
+                    {
+                        <td title="@item.Name / @amount.Name">
+                            @(((item.Price / @amount.Price).Value.ToString("n6")))
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
