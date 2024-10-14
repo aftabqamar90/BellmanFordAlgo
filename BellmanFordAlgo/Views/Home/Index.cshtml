@@ -5,35 +5,47 @@
 
 <div class="text-center">
     <h1 class="display-4">Bellman ford</h1>
-    <table class="table tale-responsive table table-bordered table-hover ">
-        <thead>
-            <tr>
-                <th>
-                    Currency
-                </th>
-                @foreach (var item in list)
-                {
-                    <th>
-                        @item.Name
-                    </th>
-                }
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in list)
-            {
-                <tr>
-                    <td>
-                        @item.Name
-                    </td>
-                    @foreach (var amount in list)
+    <h1 class="display-6">Exchange Rates</h1>
+
+    @foreach (var currency in list)
+    {
+        <div class="card bg-info ">
+            <h5 class="card-header">@currency.Name</h5>
+            <div class="card-body">
+                <div class="row">
+                    @foreach (var child in list)
                     {
-                        <td title="@item.Name / @amount.Name">
-                            @(((item.Price / @amount.Price).Value.ToString("n6")))
-                        </td>
+                        @if (child.Name != currency.Name)
+                        {
+                            double? calculate = currency.Price / child.Price;
+                            <div class="col-md-4">
+                                <div class="card" style="width: 18rem;">
+                                    <h5 class="card-header">@child.Name</h5>
+                                    <div class="card-body">
+                                        <table class="table table-responsive">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Price</td>
+                                                    <td>@calculate.Value.ToString("n6")</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Weight</td>
+                                                    <td>
+                                                        @(((double)-Math.Log(calculate??0)).ToString("n4"))
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        }
                     }
-                </tr>
-            }
-        </tbody>
-    </table>
+                </div>
+            </div>
+        </div>
+        <br />
+        <br />
+    }
+    <br>
 </div>
