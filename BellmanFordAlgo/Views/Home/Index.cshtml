@@ -1,44 +1,147 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
-    var list = new Currency() { }.Initiate();
+    var Source = new Currency() { }.Initiate();
+    var Destination = new Currency() { }.Initiate();
+    var result = new Currency() { }.Initiate();
+    var binance = await new BellmanFordAlgo.Models.Binance() { }.Get();
+    var edgesList = new List<BellmanFordAlgo.Models.Edges>();
 }
 
 <div class="text-center">
     <h1 class="display-4">Bellman ford</h1>
-    <h1 class="display-6">Exchange Rates</h1>
-
-    @foreach (var currency in list)
+    @foreach (var source in Source)
     {
-        <div class="card bg-info ">
+        foreach (var destination in Destination)
+        {
+            if (destination.Name != source.Name)
+            {
+                var find = binance.Data.FirstOrDefault(ee => ee.Symbol == destination.Name + "" + source.Name);
+                if (find != null)
+                {
+
+                    edgesList.Add(new BellmanFordAlgo.Models.Edges()
+                            {
+                                Source = source.Name,
+                                Destination = destination.Name,
+                                Weight = -Math.Log((double)find.BestBidPrice),
+                                Price = (double)find.BestBidPrice
+                            });
+                }
+            }
+        }
+    }
+
+    <table class="table table-responsive table-hover table-danger table-borderless">
+        <thead>
+            <tr>
+                <th>Source</th>
+                <th>Destination</th>
+                <th>Key</th>
+                <th>Weight</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in edgesList)
+            {
+                <tr>
+                    <td>@item.Source</td>
+                    <td>@item.Destination</td>
+                    <td>@item.Key</td>
+                    <td>@item.Weight</td>
+                    <td>@item.Price</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @* GENERATE LOOP FOR TOTAL VERTEXT
+    TOTAL NUMBER OF VERTEXT - 1
+    *@
+
+    <table class="table table-responsive">
+        <thead>
+            <tr>
+                @foreach (var source in Source)
+                {
+                    <th>
+                        @source.Name
+                    </th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var source in Source)
+            {
+                foreach (var edge in edgesList)
+                {
+                    var destValue = result.FirstOrDefault(ee => ee.Name == edge.Destination);
+                    var sourceValue = result.FirstOrDefault(ee => ee.Name == edge.Source);
+                    if (edge.Key.Contains("LTC"))
+                    {
+
+                    }
+                    var Weight = (sourceValue.Price) + (edge.Weight);
+                    if (Weight < destValue.Price)
+                    {
+                        destValue.Price = Weight;
+                    }
+                }
+                <tr>
+                    @foreach (var des in Destination)
+                    {
+                        var key = $"{des.Name}{source.Name}";
+                        <td>
+                            @if (edgesList.FirstOrDefault(ee => ee.Key == key) != null)
+                            {
+                                <span> @des.Name @result.FirstOrDefault(ee => ee.Name == des.Name).Price</span>
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <br />
+
+    @foreach (var currency in Source)
+    {
+        <div class="card bg-info " style="display:none">
             <h5 class="card-header">@currency.Name</h5>
             <div class="card-body">
                 <div class="row">
-                    @foreach (var child in list)
+                    @foreach (var child in Destination)
                     {
                         @if (child.Name != currency.Name)
                         {
-                            double? calculate = currency.Price / child.Price;
-                            <div class="col-md-4">
-                                <div class="card" style="width: 18rem;">
-                                    <h5 class="card-header">@child.Name</h5>
-                                    <div class="card-body">
-                                        <table class="table table-responsive">
-                                            <tbody>
-                                                <tr>
-                                                    <td>Price</td>
-                                                    <td>@calculate.Value.ToString("n6")</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Weight</td>
-                                                    <td>
-                                                        @(((double)-Math.Log(calculate??0)).ToString("n4"))
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                            var find = binance.Data.FirstOrDefault(ee => ee.Symbol == currency.Name + "" + child.Name);
+                            if (binance.Success &&
+                            binance.Data.Any() &&
+                            find != null)
+                            {
+                                <div class="col-md-4">
+                                    <div class="card" style="width: 18rem;">
+                                        <h5 class="card-header">@find.Symbol</h5>
+                                        <div class="card-body">
+                                            <table class="table table-responsive">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Price</td>
+                                                        <td>@find.BestBidPrice.ToString("n6")</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Weight</td>
+                                                        <td>
+                                                            @(((double)-Math.Log((double)find.BestBidPrice)).ToString("n4"))
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            }
                         }
                     }
                 </div>

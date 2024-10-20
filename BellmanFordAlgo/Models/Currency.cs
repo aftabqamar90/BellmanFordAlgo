@@ -10,22 +10,32 @@
             result.Add(new Currency()
             {
                 Name = "USDT",
-                Price = 1
+                Price = 0,
             });
             result.Add(new Currency()
             {
                 Name = "BTC",
-                Price = 62825.92
+                Price = double.MaxValue,
             });
             result.Add(new Currency()
             {
                 Name = "ETH",
-                Price = 2464.72
+                Price = double.MaxValue,
             });
             result.Add(new Currency()
             {
                 Name = "BNB",
-                Price = 574
+                Price = double.MaxValue,
+            });
+            result.Add(new Currency()
+            {
+                Name = "LTC",
+                Price = double.MaxValue,
+            });
+            result.Add(new Currency()
+            {
+                Name = "SOL",
+                Price = double.MaxValue,
             });
             return result;
         }
