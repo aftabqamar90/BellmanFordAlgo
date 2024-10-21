@@ -4,6 +4,8 @@
     {
         public string? Name { get; set; }
         public double? Price { get; set; }
+        public decimal PriceInUsdt { get; set; } = 0;
+        public decimal PriceInToken { get; set; } = 0;
         public List<Currency> Initiate()
         {
             var result = new List<Currency>();
@@ -35,6 +37,16 @@
             result.Add(new Currency()
             {
                 Name = "SOL",
+                Price = double.MaxValue,
+            });
+            result.Add(new Currency()
+            {
+                Name = "DOGE",
+                Price = double.MaxValue,
+            });
+            result.Add(new Currency()
+            {
+                Name = "APE",
                 Price = double.MaxValue,
             });
             return result;
